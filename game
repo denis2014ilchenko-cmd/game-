@@ -1,0 +1,109 @@
+duration = 5
+sample_rate = 44100
+
+words_by_level = {
+    "easy": ["кот", "собака", "яблоко", "молоко", "солнце"],
+    "medium": ["банан", "школа", "друн", "окно", "жёлтый", "ч"],
+    "hard": [
+        "технология",
+        "университет",
+        "информация",
+        "произношение",
+        "воображение",
+        "тем не менее",
+        "неохотный",
+        "самоорганизация",
+        "значительный, существенный",
+        "очень тщательный"
+        "широко распространённый"
+        "правдоподобный"
+        "тщательно изучать"
+        "уменьшать, ослаблять"
+        "усугублять"
+    ]
+}
+
+
+print("Выберите уровень сложности:")
+print("1 — Лёгкий")
+print("2 — Средний")
+print("3 — Сложный")
+
+while True:
+    choice = input("Введите номер уровня: ")
+
+    if choice == "1":
+        level = "easy"
+        break
+    elif choice == "2":
+        level = "medium"
+        break
+    elif choice == "3":
+        level = "hard"
+        break
+    else:
+        print("Ошибка! Введите 1, 2 или 3.")
+
+# Получаем слова выбранного уровня
+words = words_by_level[level]
+
+print(f"\nВы выбрали уровень: {level}")
+print("Игра начинается!\n")
+
+recognizer = sr.Recognizer()
+translator = Translator()
+
+word = random.choice(words)
+
+print(f"Переведите слово: {word}")
+print("Говорите")
+
+
+recording = sd.rec(
+    int(duration * sample_rate),
+    samplerate=sample_rate,
+    channels=1,
+    dtype=np.int16
+)
+
+sd.wait()
+
+# Сохраняем запись
+wav.write("newaudio.wav", sample_rate, recording)
+
+time.sleep(0.5)
+
+print("Запись завершена.")
+
+# Распознаём речь
+with sr.AudioFile("newaudio.wav") as source:
+    audio = recognizer.record(source)
+
+try:
+    recognized_text = recognizer.recognize_google(
+        audio,
+        language="en-US"
+    )
+
+    print("Вы сказали:", recognized_text)
+
+except sr.UnknownValueError:
+    print("Не удалось распознать речь.")
+
+except sr.RequestError:
+    print("Ошибка подключения к сервису распознавания.")
+
+print("1 — Лёгкий")
+print("2 — Средний")
+print("3 — Сложный")
+
+choice = input("Введите номер уровня: ")
+
+if choice == "1":
+    level = "easy"
+elif choice == "2":
+    level = "medium"
+elif choice == "3":
+    level = "hard"
+
+words = words_by_level[level]
